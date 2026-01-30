@@ -12,6 +12,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -77,29 +79,55 @@ public class CardRepositoryTest {
     // Write a test to verify:
     // - Card can be fetched by cardNumber
     @Test
-    @Disabled
     void shouldFindCardByCardNumber() {
         // GIVEN
+        Card card = new Card();
+        card.setCardNumber("4111111111111111");
+        card.setCardType("DEBIT");
+        card.setExpiryDate(LocalDate.of(2030, 12, 31));
+        card.setStatus("ACTIVE");
+        card.setWallet(this.wallet);
 
+        Card savedCard = cardRepository.save(card);
 
         // WHEN
-
+        Optional<Card> foundCard = cardRepository.findByCardNumber(savedCard.getCardNumber());
 
         // THEN
-
+        assertThat(foundCard).isPresent();
+        assertThat(foundCard.get().getCardNumber()).isEqualTo(savedCard.getCardNumber());
+        assertThat(foundCard.get().getId()).isEqualTo(savedCard.getId());
+        assertThat(foundCard.get().getWallet().getId()).isEqualTo(this.wallet.getId());
     }
 
     //TODO: 3.5.5
     // Write a test to verify:
     // - existsByCardNumber returns true for existing card
-    // - existsByCardNumber returns false for non-existing card
-    @Disabled
     @Test
-    void shouldCheckIfCardExistsByCardNumber() {
+    void shouldReturnTrueWhenCardExistsByCardNumber() {
         // GIVEN
+        Card card = new Card();
+        card.setCardNumber("5555555555555555");
+        card.setCardType("CREDIT");
+        card.setExpiryDate(LocalDate.of(2028, 6, 30));
+        card.setStatus("ACTIVE");
+        card.setWallet(this.wallet);
 
+        Card savedCard = cardRepository.save(card);
 
         // WHEN + THEN
+        assertThat(cardRepository.existsByCardNumber(savedCard.getCardNumber())).isTrue();
+    }
 
+    //TODO: 3.5.5
+    // Write a test to verify:
+    // - existsByCardNumber returns false for non-existing card
+    @Test
+    void shouldReturnFalseWhenCardDoesNotExistByCardNumber() {
+        // GIVEN
+        String nonExistingCardNumber = "9999999999999999";
+
+        // WHEN + THEN
+        assertThat(cardRepository.existsByCardNumber(nonExistingCardNumber)).isFalse();
     }
 }
