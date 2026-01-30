@@ -11,11 +11,17 @@ public class CardService {
 
     //TODO: 2.1.1
     // create a private final field for CardRepository (dependency)
+    private final CardRepository cardRepository;
+
 
 
     //TODO: 2.1.2
     // create a constructor to inject CardRepository
 
+
+    public CardService(CardRepository cardRepository) {
+        this.cardRepository = cardRepository;
+    }
 
     //TODO: 2.1.3
     // -----------------------------------------
@@ -29,6 +35,7 @@ public class CardService {
         // throw runtime exception if it exists "Card number already exists"
 
         // STEP 2: Save and return the card
+
         return null;
     }
 
