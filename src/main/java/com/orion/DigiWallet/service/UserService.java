@@ -28,12 +28,20 @@ public class UserService  {
 
         List<User> users = userRepository.findAll();
         logger.info("Total users fetched: {}", users.size());
-        return users;
+
         //TODO: 1.4
         // For each user in the list, call generateGreetingMsg(user)
         // before returning the list
         // Hint: Use a for-each loop to iterate through the users list
         // test the result on swagger or postman
+
+
+        for (User user : users) {
+            String msg = generateGreetingMsg(user.getRole());
+            user.setUserGreetingMessage(msg);
+        }
+
+        return users;
 
 
     }
@@ -45,7 +53,17 @@ public class UserService  {
         // Example: logger.info("Fetching user with id {}", id);
         // Fetch user from repository
         // test the result on swagger or postman
-        return null;
+        logger.info("Fetching user with id {}", id);
+
+        User user = userRepository.findById(id).orElseThrow(()-> new RuntimeException("User Not Found"));
+
+        if (user != null) {
+            String greeting = generateGreetingMsg(user.getRole());
+            user.setUserGreetingMessage(greeting);
+        }
+
+        return user;
+//        return null;
 
         //TODO: 1.3
         // Before returning the User object, call generateGreetingMsg(role)
@@ -78,7 +96,13 @@ public class UserService  {
         // Example: "User access"
         // return the complete greeting message as a String
         // write a unit test to verify this method works as expected
-        return null;
+        String msg = "Hello! ";
+        if (role != null && role.equalsIgnoreCase("ADMIN")) {
+            msg = msg + "Admin access enabled";
+        } else {
+            msg = msg + "User access";
+        }
+        return msg;
     }
 
     public User updateUserStatus(Long id) {
